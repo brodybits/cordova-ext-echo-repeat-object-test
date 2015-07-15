@@ -44,6 +44,28 @@ public class Echo extends CordovaPlugin {
                 this.echo(message, callbackContext);
                 return true;
             }
+            if (action.equals("array_object_count")) {
+                int l = args.length();
+                JSONObject co = new JSONObject();
+                co.put("count", l);
+                JSONArray r = new JSONArray();
+                r.put(co);
+                callbackContext.success(r);
+                return true;
+            }
+            if (action.equals("repeat_it")) {
+                Object o = args.get(0);
+                JSONObject c1 = args.getJSONObject(1);
+                int count = c1.getInt("count");
+                this.repeat_it(o, count, callbackContext);
+                return true;
+            }
+            if (action.equals("build_test")) {
+                JSONObject c1 = args.getJSONObject(0);
+                int count = c1.getInt("count");
+                this.build_test(count, callbackContext);
+                return true;
+            }
             return false;
         }
 
@@ -54,5 +76,29 @@ public class Echo extends CordovaPlugin {
                 callbackContext.error("Expected one non-empty string argument.");
             }
         }
-        
+
+        private void repeat_it(Object o, int count, CallbackContext callbackContext) {
+            if (o != null && count > 0) {
+                JSONArray r = new JSONArray();
+                for (int i=0; i<count; ++i) r.put(o);
+                callbackContext.success(r);
+            } else {
+                callbackContext.error("Expected ...");
+            }
+        }
+
+        private void build_test(int count, CallbackContext callbackContext) {
+            JSONArray r = new JSONArray();
+            for (int i=0; i<count; ++i) {
+                try {
+                    JSONObject o1 = new JSONObject();
+                    o1.put("p1", "v1");
+                    o1.put("p2", 2);
+                    o1.put("p3", i);
+                    r.put(o1);
+                } catch(Exception e) { }
+            }
+            callbackContext.success(r);
+        }
+
 }
